@@ -1,0 +1,6 @@
+package: .
+import:
+- package: github.com/BurntSushi/toml
+- package: github.com/gin-gonic/gin
+- package: github.com/thoas/stats
+- package: github.com/Sirupsen/logrus

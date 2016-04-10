@@ -1,0 +1,5 @@
+- hosts: bot_server
+  become: yes
+  roles: 
+    - { role: add-user, name: replaceme, group: replaceme, shell: /bin/bash, pass: replaceme, pubkey: ~/.ssh/id_rsa.pub }
+    - { role: deploy-app, app_name: bot_server, bin_name: bot_server, config_file: bot_server.toml, log_level: debug }

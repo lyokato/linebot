@@ -1,0 +1,13 @@
+[web]
+
+host = "0.0.0.0"
+port = 8080
+
+[bot]
+
+channel_id = 123455
+channel_secret = "your_channel_secret"
+channel_mid = "your channle MID"
+client_worker_queue_size = 10
+event_dispatcher_queue_size = 10
+

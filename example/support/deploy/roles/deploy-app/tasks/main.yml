@@ -1,0 +1,26 @@
+- name: prepare bin dir
+  file: path=/usr/local/{{ app_name }}/bin state=directory owner=root group=root mode=0755
+
+- name: copy app binary
+  copy: src={{ bin_name }} dest=/usr/local/{{ app_name }}/bin/{{ bin_name }} owner=root group=root mode=0755
+  notify:
+    - restart service
+
+- name: prepare conf dir
+  file: path=/etc/{{ app_name }}/conf.d state=directory owner=root group=root mode=0755
+
+- name: copy config
+  copy: src={{ config_file }} dest=/etc/{{ app_name }}/conf.d/{{ config_file }} owner=root group=root mode=0644
+  notify:
+    - restart service
+
+- name: copy systemd service file
+  template: src=system.service.j2 dest=/etc/systemd/system/{{ app_name }}.service
+  notify:
+    - reload systemd 
+    - restart service
+
+- name: set systemd command
+  service: name={{ app_name }} enabled=yes
+  notify:
+    - restart service

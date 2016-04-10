@@ -1,0 +1,13 @@
+- name: add users' account
+  user: name={{ name }} password={{ pass }} shell={{ shell }} state=present
+
+- name: set sudo
+  lineinfile: "dest=/etc/sudoers backup=yes state=present regexp='^{{ name }}' line='{{ name }} ALL=(ALL) NOPASSWD: ALL'"
+
+- name: mkdir .ssh for users
+  file: dest=/home/{{ name }}/.ssh/ state=directory owner={{ name }} group={{ group }} mode=700
+  with_items: users
+
+- name: copy pubkey for each user
+  copy: src={{ pubkey }} dest=/home/{{ name }}/.ssh/authorized_keys owner={{ name }} group={{ group }} mode=600
+  with_items: users

@@ -1,0 +1,10 @@
+[Unit]
+Description = {{ app_name }} description
+
+[Service]
+ExecStart = /usr/local/{{ app_name }}/bin/{{ bin_name }} -config=/etc/{{ app_name }}/conf.d/{{ config_file }} -log={{ log_level }}
+Restart = always
+Type = simple
+
+[Install]
+WantedBy = multi-user.target
