@@ -8,7 +8,7 @@ THIS IS NOT STABLE VERSION
 
 各種別のメッセージがまだテストしきれてなくてrobustじゃないです
 
-## Buildgin Bot Server
+## Building Bot Server
 
 ### Step 1: イベントを受け取る
 
