@@ -49,38 +49,58 @@ func New() *YourEventHandler {
 
 func (h *YourEventHandler) OnAddedAsFriendOperation(ev *linebot.Event, op *linebot.Operation) {
 	log.Infof("OnAddedAsFriendOperation: %v %v", ev, op)
+  // op.Params : list of MID([]string)
 }
 
 func (h *YourEventHandler) OnBlockedAccountOperation(ev *linebot.Event, op *linebot.Operation) {
 	log.Infof("OnBlockedAccountOperation: %v %v", ev, op)
+  // op.Params : list of MID([]string)
 }
 
 func (h *YourEventHandler) OnTextMessage(ev *linebot.Event, msg *linebot.Message) {
 	log.Infof("OnTextMesssage: %v %v", ev, msg)
+  // msg.From : sender's MID
+  // msg.Text : text message
 }
 
 func (h *YourEventHandler) OnImageMessage(ev *linebot.Event, msg *linebot.Message) {
 	log.Infof("OnImageMesssage: %v %v", ev, msg)
+  // msg.From : sender's MID
 }
 
 func (h *YourEventHandler) OnVideoMessage(ev *linebot.Event, msg *linebot.Message) {
 	log.Infof("OnVideoMesssage: %v %v", ev, msg)
+  // msg.From : sender's MID
 }
 
 func (h *YourEventHandler) OnAudioMessage(ev *linebot.Event, msg *linebot.Message) {
 	log.Infof("OnAudioMesssage: %v %v", ev, msg)
+  // msg.From : sender's MID
 }
 
 func (h *YourEventHandler) OnLocationMessage(ev *linebot.Event, msg *linebot.Message) {
 	log.Infof("OnLocationMesssage: %v %v", ev, msg)
+  // msg.From : sender's MID
+  // msg.Location.Title 
+  // msg.Location.Address
+  // msg.Location.Latitude 
+  // msg.Location.Langitude 
 }
 
 func (h *YourEventHandler) OnStickerMessage(ev *linebot.Event, msg *linebot.Message) {
 	log.Infof("OnStickerMesssage: %v %v", ev, msg)
+  // msg.From : sender's MID
+  // msg.ContentMetadata.STKPKGID : sticker package ID
+  // msg.ContentMetadata.STKID : sticker ID
+  // msg.ContentMetadata.STKVER : sticker version
+  // msg.ContentMetadata.STKTXT : text of sticker
 }
 
 func (h *YourEventHandler) OnContactMessage(ev *linebot.Event, msg *linebot.Message) {
 	log.Infof("OnContactMesssage: %v %v", ev, msg)
+  // msg.From : sender's MID
+  // msg.ContentMetadata.DisplayName
+  // msg.ContentMetadata.MID
 }
 ```
 

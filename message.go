@@ -25,11 +25,11 @@ type (
 	OutboundContent struct {
 		ContentType        int              `json:"contentType"`
 		ToType             int              `json:"toType"`
-		Text               string           `json:"text", omitempty`
-		OriginalContentUrl string           `json:"originalContentUrl", omitempty`
-		PreviewImageUrl    string           `json:"previewImageUrl", omitempty`
-		Metadata           *ContentMetadata `json:"contentMetadata", omitempty`
-		Location           *Location        `json:"location", omitempty`
+		Text               string           `json:"text,omitempty"`
+		OriginalContentUrl string           `json:"originalContentUrl,omitempty"`
+		PreviewImageUrl    string           `json:"previewImageUrl,omitempty"`
+		Metadata           *ContentMetadata `json:"contentMetadata,omitempty"`
+		Location           *Location        `json:"location,omitempty"`
 	}
 
 	RequestJSON struct {
@@ -37,44 +37,44 @@ type (
 	}
 
 	Event struct {
-		From        string                 `json:"from", omitempty`
-		FromChannel int                    `json:"fromChannel", omitempty`
-		To          []string               `json:"to", omitempty`
-		ToChannel   int                    `json:"toChannel", omitempty`
-		EventType   string                 `json:"eventType", omitempty`
-		Id          string                 `json:"id", omitempty`
-		Content     map[string]interface{} `json:"content", omitempty`
+		From        string                 `json:"from,omitempty"`
+		FromChannel int                    `json:"fromChannel,omitempty"`
+		To          []string               `json:"to,omitempty"`
+		ToChannel   int                    `json:"toChannel,omitempty"`
+		EventType   string                 `json:"eventType,omitempty"`
+		Id          string                 `json:"id,omitempty"`
+		Content     map[string]interface{} `json:"content,omitempty"`
 	}
 
 	Message struct {
-		Id              string           `json:"id", omitempty`
-		ContentType     int              `json:"contentType", omitempty`
-		From            string           `json:"from", omitempty`
-		CreatedTime     int64            `json:"createdTime", omitempty`
-		To              []string         `json:"to", omitempty`
-		ToType          int              `json:"toType", omitempty`
-		ContentMetadata *ContentMetadata `json:"contentMetadata", omitempty`
-		Text            string           `json:"text", omitempty`
-		Location        *Location        `json:"location", omitempty`
+		Id              string           `json:"id,omitempty"`
+		ContentType     int              `json:"contentType,omitempty"`
+		From            string           `json:"from,omitempty"`
+		CreatedTime     int64            `json:"createdTime,omitempty"`
+		To              []string         `json:"to,omitempty"`
+		ToType          int              `json:"toType,omitempty"`
+		ContentMetadata *ContentMetadata `json:"contentMetadata,omitempty"`
+		Text            string           `json:"text,omitempty"`
+		Location        *Location        `json:"location,omitempty"`
 	}
 
 	Location struct {
 		Title     string  `json:"title"`
-		Address   string  `json:"address", omitempty`
+		Address   string  `json:"address"`
 		Latitude  float64 `json:"latitude"`
 		Longitude float64 `json:"longitude"`
 	}
 
 	ContentMetadata struct {
-		STKPKGID string `json:"STKPKGID", omitempty`
-		STKID    string `json:"STKID", omitempty`
-		STKVER   string `json:"STKVER", omitempty`
-		STKTXT   string `json:"STKTXT", omitempty`
+		STKPKGID string `json:"STKPKGID,omitempty"`
+		STKID    string `json:"STKID,omitempty"`
+		STKVER   string `json:"STKVER,omitempty"`
+		STKTXT   string `json:"STKTXT,omitempty"`
 
-		AUDLEN string `json:"AUDLEN", omitempty`
+		AUDLEN string `json:"AUDLEN,omitempty"`
 
-		MID         string `json:"mid", omitempty`
-		DisplayName string `json:"displayName", omitempty`
+		MID         string `json:"mid,omitempty"`
+		DisplayName string `json:"displayName,omitempty"`
 	}
 
 	Operation struct {
