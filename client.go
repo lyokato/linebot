@@ -24,7 +24,7 @@ type (
 		PostImage(to, imageUrl, thumbnailUrl string)
 		PostVideo(to, movieUrl, thumbnailUrl string)
 		PostAudio(to, audioUrl string, playTimeMilliSeconds int)
-		PostLocation(to, text, locationTitle string, latitude, longitude float64)
+		PostLocation(to, locationTitle, address string, latitude, longitude float64)
 		PostSticker(to, stickerId, stickerPackageId, stickerVersion string)
 	}
 
@@ -142,13 +142,14 @@ func buildAudioMessageRequest(to, audioUrl string, playTimeMilliSeconds int) *Po
 	return buildPostEventRequest(to, content)
 }
 
-func buildLocationMessageRequest(to, text, locationTitle string, latitude, longitude float64) *PostEventRequest {
+func buildLocationMessageRequest(to, address, locationTitle string, latitude, longitude float64) *PostEventRequest {
 	content := &OutboundContent{
 		ContentType: ContentTypeLocation,
 		ToType:      ToTypeUser,
-		Text:        text,
+		Text:        "Location",
 		Location: &Location{
 			Title:     locationTitle,
+			Address:   address,
 			Latitude:  latitude,
 			Longitude: longitude,
 		},
@@ -189,8 +190,8 @@ func (c *client) PostAudio(to, audioUrl string, playTimeMilliSeconds int) {
 	c.PostEvent(r)
 }
 
-func (c *client) PostLocation(to, text, locationTitle string, latitude, longitude float64) {
-	r := buildLocationMessageRequest(to, text, locationTitle, latitude, longitude)
+func (c *client) PostLocation(to, locationTitle, address string, latitude, longitude float64) {
+	r := buildLocationMessageRequest(to, locationTitle, address, latitude, longitude)
 	c.PostEvent(r)
 }
 

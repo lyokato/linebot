@@ -32,8 +32,8 @@ func (w *ClientWorker) PostAudio(to, audioUrl string, playTimeMilliSeconds int) 
 	w.PostEvent(r)
 }
 
-func (w *ClientWorker) PostLocation(to, text, locationTitle string, latitude, longitude float64) {
-	r := buildLocationMessageRequest(to, text, locationTitle, latitude, longitude)
+func (w *ClientWorker) PostLocation(to, locationTitle, address string, latitude, longitude float64) {
+	r := buildLocationMessageRequest(to, locationTitle, address, latitude, longitude)
 	w.PostEvent(r)
 }
 
