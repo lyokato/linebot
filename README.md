@@ -184,7 +184,7 @@ type Client interface {
 		PostImage(to, imageUrl, thumbnailUrl string)
 		PostVideo(to, movieUrl, thumbnailUrl string)
 		PostAudio(to, audioUrl string, playTimeMilliSeconds int)
-		PostLocation(to, text, locationTitle string, latitude, longitude float64)
+		PostLocation(to, locationTitle, address string, latitude, longitude float64)
 		PostSticker(to, stickerId, stickerPackageId, stickerVersion string)
 	}
 ```
