@@ -6,14 +6,18 @@ import (
 	"encoding/base64"
 )
 
-func sign(body []byte, key string) string {
+func sign(body []byte, key string) []byte {
 	hash := hmac.New(sha256.New, []byte(key))
 	hash.Write(body)
-	return base64.StdEncoding.EncodeToString(hash.Sum(nil))
+	return hash.Sum(nil)
 }
 
 func verify(sig string, body []byte, key string) bool {
-	if sig == sign(body, key) {
+	sb, err := base64.StdEncoding.DecodeString(sig)
+	if err != nil {
+		return false
+	}
+	if hmac.Equals(sb, sign(body, key)) {
 		return true
 	} else {
 		return false
