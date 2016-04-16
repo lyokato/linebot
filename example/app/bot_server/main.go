@@ -27,20 +27,16 @@ func runServer(conf *config.Config, debug bool) {
 	cw := linebot.NewClientWorker(bc.ChannelId,
 		bc.ChannelSecret, bc.MID, bc.ClientWorkerQueueSize)
 	cw.Run()
-
 	evh := handler.New(cw)
 
-	evd := linebot.NewAsyncEventDispatcher(evh, bc.EventDispatcherQueueSize)
-	evd.Run()
-
-	bot := linebot.NewServer(bc.ChannelSecret, evd)
+	bot := linebot.NewServer()
 
 	g := gin.Default()
 	if !debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	g.POST("/", gin.WrapF(bot.HTTPHandler()))
+	g.POST("/", gin.WrapF(bot.HTTPHandler(bc.ChannelSecret, evh, bc.EventDispatcherQueueSize)))
 
 	/*
 		admin := g.Group("/admin")

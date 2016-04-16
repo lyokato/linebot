@@ -17,7 +17,7 @@ func verify(sig string, body []byte, key string) bool {
 	if err != nil {
 		return false
 	}
-	if hmac.Equals(sb, sign(body, key)) {
+	if hmac.Equal(sb, sign(body, key)) {
 		return true
 	} else {
 		return false

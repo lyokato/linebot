@@ -19,16 +19,16 @@ THIS IS NOT STABLE VERSION
 
 ```
 type EventHandler interface {
-		OnAddedAsFriendOperation(e *Event, op *Operation)
-		OnBlockedAccountOperation(e *Event, op *Operation)
-		OnTextMessage(e *Event, msg *Message)
-		OnImageMessage(e *Event, msg *Message)
-		OnVideoMessage(e *Event, msg *Message)
-		OnAudioMessage(e *Event, msg *Message)
-		OnLocationMessage(e *Event, msg *Message)
-		OnStickerMessage(e *Event, msg *Message)
-		OnContactMessage(e *Event, msg *Message)
-	}
+	OnAddedAsFriendOperation(MIDs []string)
+	OnBlockedAccountOperation(MIDs []string)
+	OnTextMessage(from, text string)
+	OnImageMessage(from string)
+	OnVideoMessage(from string)
+	OnAudioMessage(from string)
+	OnLocationMessage(from, title, address string, latitude, longitude float64)
+	OnStickerMessage(from, stickerPackageId, stickerId, stickerVersion, stickerText string)
+	OnContactMessage(from, MID, displayName string)
+}
 ```
 
 このインターフェースを実装し、イベントを受け取ったらログを出力するだけのハンドラを用意してみましょう
@@ -47,67 +47,49 @@ func New() *YourEventHandler {
 	return &YourEventHandler{}
 }
 
-func (h *YourEventHandler) OnAddedAsFriendOperation(ev *linebot.Event, op *linebot.Operation) {
-	log.Infof("OnAddedAsFriendOperation: %v %v", ev, op)
-  // op.Params : list of MID([]string)
+func (h *YourEventHandler) OnAddedAsFriendOperation(MIDs []string) {
+	log.Infof("OnAddedAsFriendOperation: %v %v", MIDs)
 }
 
-func (h *YourEventHandler) OnBlockedAccountOperation(ev *linebot.Event, op *linebot.Operation) {
-	log.Infof("OnBlockedAccountOperation: %v %v", ev, op)
-  // op.Params : list of MID([]string)
+func (h *YourEventHandler) OnBlockedAccountOperation(MIDs []string) {
+	log.Infof("OnBlockedAccountOperation: %v", MIDs)
 }
 
-func (h *YourEventHandler) OnTextMessage(ev *linebot.Event, msg *linebot.Message) {
-	log.Infof("OnTextMesssage: %v %v", ev, msg)
-  // msg.From : sender's MID
-  // msg.Text : text message
+func (h *YourEventHandler) OnTextMessage(from, text string) {
+	log.Infof("OnTextMesssage: %s %s", from, text)
 }
 
-func (h *YourEventHandler) OnImageMessage(ev *linebot.Event, msg *linebot.Message) {
-	log.Infof("OnImageMesssage: %v %v", ev, msg)
-  // msg.From : sender's MID
+func (h *YourEventHandler) OnImageMessage(from string) {
+	log.Infof("OnImageMesssage: %s", from)
 }
 
-func (h *YourEventHandler) OnVideoMessage(ev *linebot.Event, msg *linebot.Message) {
-	log.Infof("OnVideoMesssage: %v %v", ev, msg)
-  // msg.From : sender's MID
+func (h *YourEventHandler) OnVideoMessage(from string) {
+	log.Infof("OnVideoMesssage: %s", from)
 }
 
-func (h *YourEventHandler) OnAudioMessage(ev *linebot.Event, msg *linebot.Message) {
-	log.Infof("OnAudioMesssage: %v %v", ev, msg)
-  // msg.From : sender's MID
+func (h *YourEventHandler) OnAudioMessage(from string) {
+	log.Infof("OnAudioMesssage: %s", from)
 }
 
-func (h *YourEventHandler) OnLocationMessage(ev *linebot.Event, msg *linebot.Message) {
-	log.Infof("OnLocationMesssage: %v %v", ev, msg)
-  // msg.From : sender's MID
-  // msg.Location.Title 
-  // msg.Location.Address
-  // msg.Location.Latitude 
-  // msg.Location.Langitude 
+func (h *YourEventHandler) OnLocationMessage(from, title, address string, latitude, longitude float64)
+	log.Infof("OnLocationMesssage: %s %s %s", from, title, address)
 }
 
-func (h *YourEventHandler) OnStickerMessage(ev *linebot.Event, msg *linebot.Message) {
-	log.Infof("OnStickerMesssage: %v %v", ev, msg)
-  // msg.From : sender's MID
-  // msg.ContentMetadata.STKPKGID : sticker package ID
-  // msg.ContentMetadata.STKID : sticker ID
-  // msg.ContentMetadata.STKVER : sticker version
-  // msg.ContentMetadata.STKTXT : text of sticker
+func (h *YourEventHandler) OnStickerMessage(from, stickerPackageId, stickerId, stickerVersion, stickerText string)
+	log.Infof("OnStickerMesssage: %s %s %s", from, stickerPackageId, stickerId)
 }
 
-func (h *YourEventHandler) OnContactMessage(ev *linebot.Event, msg *linebot.Message) {
-	log.Infof("OnContactMesssage: %v %v", ev, msg)
-  // msg.From : sender's MID
-  // msg.ContentMetadata.DisplayName
-  // msg.ContentMetadata.MID
+func (h *YourEventHandler) OnContactMessage(from, MID, displayName string)
+	log.Infof("OnContactMesssage: %s %s %s", from, MID, displayName)
 }
 ```
 
-以下のようにlinebot.NewServerメソッドに二つの引数を渡してbotServerの準備をします。
+以下のようにlinebot.NewServerを使ってbotServerを作成し。
+そしてHTTPHandlerに以下の三つを渡し、http.HandleFuncを準備します。
 
 - channelSecret: あらかじめLINEのDeveloper Channelで発行された*channel secret*の文字列を指定
-- yourEventHandler: 上で準備したEventHandlerインターフェースを実装したオブジェクト
+- eventHandler: 上で準備したEventHandlerインターフェースを実装したオブジェクト
+- queueSize: eventを扱うchannelのサイズ
 
 ```
 package main
@@ -122,14 +104,13 @@ const cnannelSecret = "your channel secret"
 func main() {
   ...
   evh := your_event_handler.New()
-  botServer := linebot.NewServer(channelSecret, evh)
-  http.HandleFunc("/callback", botServer.HTTPHandler()) 
+  botServer := linebot.NewServer()
+  http.HandleFunc("/callback", botServer.HTTPHandler(channelSecret, evh, eventQueueSize)) 
   http.ListenAndServe(address, nil)
   ...
 }
 ```
 
-上の例のように、botServer.HTTPHandler()で、http.HandleFuncを返します。
 お使いに環境に合わせて
 Routingの設定をするとよいでしょう。
 
@@ -140,44 +121,10 @@ http.HandleFuncをその環境用のハンドラにラップする手段が用�
 
 ```
 g := gin.Default()
-g.POST("/", gin.WrapF(botServer.HTTPHandler()))
+g.POST("/", gin.WrapF(botServer.HTTPHandler(botServer.HTTPHandler(channelSecret, evh, queueSize))))
 ```
 
-### Step 2: 非同期でイベントを受け取る 
-
-
-上の例ではログ出力するだけなので問題ないのですが、
-今後、機能を追加していく際に、内部のデータベースやマイクロサービス、
-あるいは外部のサービスとの連動などが必要になってくるかもしれません。
-
-そうすると一つのイベントハンドラ内での処理時間が長くなってくることが予想されます。
-LINEからリクエストが来たら、10秒以内にレスポンスは返さなければなりませんし、
-そもそもHTTPのリクエスト処理のプールを出来るだけ塞がないようにするほうがよいでしょう。
-
-このために、AsyncEventDispatcherが用意されています。
-EventHandlerを直接使わずに、AsyncEventDispatcherでラップします。
-```
-evh := your_event_handler.New()
-
-queueSize = 10
-evd := linebot.NewAsyncEventDispatcher(evh, queueSize)
-evd.Run()
-
-botServer := linebot.NewServer(channelSecret, evd)
-
-g := gin.Default()
-g.POST("/", gin.WrapF(botServer.HTTPHandler()))
-
-```
-AsyncEventDispatcherのRunメソッドを呼ぶと、独立したgoroutineが開始され、
-その中のループでイベントハンドラが呼び出されます。
-
-このためLineからのリクエストを受け取るHTTPサーバーの処理をつまらせることがありません。
-
-(あくまで簡易的なものなので、本格的に非同期の分散処理が必要ならば、AmazonSQSやNSQなどの
-メッセージキュープロダクトを利用するのがよいでしょう)
-
-### Step 3: メッセージを送信する
+### Step 2: メッセージを送信する
 
 これまでは受信だけの説明をしてきました。
 ユーザーにメッセージを送らなければ対話は成り立ちません。
@@ -209,7 +156,7 @@ type Client interface {
 	}
 ```
 
-### Step 4: ユーザーからのメッセージに対して返信する
+### Step 3: ユーザーからのメッセージに対して返信する
 
 Step1で作成したYourEventHandlerの一部を次のように変更します
 
@@ -231,10 +178,10 @@ func New(client linebot.Client) *YourEventHandler {
   }
 }
 
-func (h *YourEventHandler) OnTextMessage(ev *linebot.Event, msg *linebot.Message) {
-	log.Infof("OnTextMesssage: %v %v", ev, msg)
+func (h *YourEventHandler) OnTextMessage(from, text string) {
+	log.Infof("OnTextMesssage: %s %s", from, text)
 
-  h.client.PostText(msg.From, msg.Text)
+  h.client.PostText(from, text)
 }
 
 ...
@@ -248,48 +195,14 @@ func main() {
   c := linebot.NewClient(channelId, channelSecre, mid)
 
   evh := your_event_handler.New(c)
-
-  evd := linebot.NewAsyncEventDispatcher(evh, queueSize)
-  evd.Run()
-
-  botServer := linebot.NewServer(channelSecret, evd)
+  botServer := linebot.NewServer()
 
   g := gin.Default()
-  g.POST("/", gin.WrapF(botServer.HTTPHandler()))
+  g.POST("/", gin.WrapF(botServer.HTTPHandler(channelSecret, evh, queueSize)))
 ...
 }
 
 ```
-
-### Step 5: クライアントも非同期処理に
-
-クライアントの処理も、LINEへのHTTPリクエストで時間がかかることもあるかもしれません。
-ここも独立したgoroutine内のループで処理することが可能です。
-
-このためには、以下のようにClientWorkerを利用します。
-こちらもAsyncEventDispatcherと同様に、queue sizeの指定と、Runメソッドでgoroutineを開始しておくのを忘れないようにしましょう。
-
-```
-func main() {
-...
-  queueSize = 10
-  c := linebot.NewClientWorker(channelId, channelSecre, mid, queueSize)
-  c.Run()
-
-  evh := your_event_handler.New(c)
-
-  evd := linebot.NewAsyncEventDispatcher(evh, queueSize)
-  evd.Run()
-
-  botServer := linebot.NewServer(channelSecret, evd)
-
-  g := gin.Default()
-  g.POST("/", gin.WrapF(botServer.HTTPHandler()))
-...
-}
-
-```
-
 
 ## Example
 
